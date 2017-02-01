@@ -12,16 +12,18 @@ Recommended way for installation is using yarn, however it's working the same wa
 
 ### Commands:
 
-- npm start : starts the server in watch mode using nodemon
-- npm run lint : lint code using ESLint
-- npm run lint:watch : run linter in watch mode
-- npm run lint:fix : let linter fix errors found
-- npm run build : transcompile code to es5 in the /build folder
-- npm run serve : runs the previously built server in production mode
-- npm test: run all tests
-- npm test:watch : run all tests in watch mode
-- npm run db : start up a mongo server to connect to with mongoose from the application
-
+| **`npm run <script>`** | **Description** |
+|------------------------|-----------------|
+|`start`|Serves your development server at `localhost:3004` in watch mode.|
+|`build`|Transcompiles your code to es5 to the `/build` folder.|
+|`serve`|Serves the previously built server in production mode from the `/build` folder.|
+|`test`|Runs unit tests using Mocha.|
+|`test:watch`|Runs unit tests using Mocha in watch mode.|
+|`lint`|Lint all `.js` files.|
+|`lint:watch`|Lint all `.js` files in watch mode.|
+|`lint:fix`|Lint and fix all `.js` files. [Read more on this](http://eslint.org/docs/user-guide/command-line-interface.html#fix).|
+|`db`|Starts up a mongoDB server on `localhost:27017`|
 ### Using mongoose:
 
 To use mongoose in the project set the `useDB` flag in config to `true` and the `DBHost` flag to point to your mongoDB database (defaults to localhost:27017)
+
