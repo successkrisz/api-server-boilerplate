@@ -1,38 +1,33 @@
-import "babel-polyfill";
-import koa from 'koa';
-//import mongoose from 'mongoose';
-import middleware from 'koa-router';
-import logger from 'koa-logger';
-import parser from 'koa-bodyparser';
+import 'babel-polyfill';
 import config from 'config';
-import routing from './routing';
+import _debug from 'debug';
+import Koa from 'koa';
+import parser from 'koa-bodyparser';
+import convert from 'koa-convert';
+import logger from 'koa-logger';
 
-// uncomment below to connect to mongodb server
-/*
-if (process.env.NODE_ENV != 'test') {
-// Mongoose init
-const options = {
-  server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } },
-  replset: { socketOptions: { keepAlive: 1, connectTimeoutMS : 30000 } }
+import router from './routing';
+import connectToDB from './mongoose';
+
+const app = new Koa();
+const debug = _debug('app:server');
+const isTest = (process.env.NODE_ENV === 'test');
+
+const ctxLogger = async function (ctx, next) {
+  debug(ctx);
+  return await next();
 };
-mongoose.Promise = global.Promise;
-mongoose.connect(config.DBHost, options);
-mongoose.connection.on('error', console.error);
-}
-*/
 
-// Apply routes to the router.
-const router = routing(middleware());
-const app = new koa();
+if (config.useDB && !isTest) connectToDB();
 
 app
-  .use(logger())
-  .use(parser())
-  .use(async function(ctx, next) {
-    console.log(ctx);
-    return await next();
-  })
-  .use(router.routes())
-  .use(router.allowedMethods())
+  .use(convert(logger()))
+  .use(convert(parser()));
 
-export default app.listen(config.PORT, () => console.log("Server running at: http://localhost:" + config.PORT));
+if (!isTest) app.use(ctxLogger);
+
+app
+  .use(router.routes())
+  .use(router.allowedMethods());
+
+export default app.listen(config.PORT, () => debug(`Server running at: http://localhost: ${config.PORT}`));
